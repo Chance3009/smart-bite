@@ -1,88 +1,119 @@
 import 'package:flutter/material.dart';
-import '../widgets/chat_bubble.dart';
-import '../services/chatbot_service.dart';
-import '../models/chat_message.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
-
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _chatController = TextEditingController();
-  final ChatbotService _chatClient = ChatbotService(
-    projectId: 'smart-bite-444717',
-    agentId: 'fc6dc903-2b3b-4d44-a3b3-7899ca1892fb',
-    location: 'asia-southeast1',
-  );
+  final List<Map<String, String>> messages = [];
+  final TextEditingController messageController = TextEditingController();
 
-  final List<ChatMessage> _messages = <ChatMessage>[];
-
-  void _handleSubmitted(String text) async {
-    if (text.isEmpty) return;
-
-    final userMessage = ChatMessage(text: text, name: "You", type: true);
-    setState(() {
-      _messages.insert(0, userMessage);
-    });
-
-    _chatController.clear();
-
-    final response = await _chatClient.sendMessage('1', text);
-    final botMessage = ChatMessage(text: response, name: "Bot", type: false);
-
-    setState(() {
-      _messages.insert(0, botMessage);
-    });
+  void sendMessage(String text) {
+    if (text.isNotEmpty) {
+      setState(() {
+        messages.add({"sender": "user", "message": text});
+        messages.add({"sender": "bot", "message": "How can I help you today?"});
+      });
+      messageController.clear();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.yellow[100],
       appBar: AppBar(
-        backgroundColor: Color(0xFF325C2D),
-        title: const Text("SMART BITE", style: TextStyle(color: Color(0xFFF6E08A))),
-      ),
-      body: Container(
-        color: Color(0xFFF5EDCA),
-        child: Column(
+        backgroundColor: Colors.green,
+        title: Row(
           children: [
-            Flexible(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8.0),
-                reverse: true,
-                itemBuilder: (context, index) => ChatBubble(message: _messages[index]),
-                itemCount: _messages.length,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                border: Border.all(color: Colors.blue),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              child: Row(
-                children: <Widget>[
-                  Flexible(
-                    child: TextField(
-                      controller: _chatController,
-                      onSubmitted: _handleSubmitted,
-                      decoration: const InputDecoration.collapsed(hintText: "Type a message"),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: () => _handleSubmitted(_chatController.text),
-                  ),
-                ],
-              ),
+            CircleAvatar(backgroundColor: Colors.white, child: Text("A")),
+            SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Anna", style: TextStyle(fontSize: 16)),
+                Text("Online", style: TextStyle(fontSize: 12)),
+              ],
             ),
           ],
         ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.all(10),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final isUser = messages[index]["sender"] == "user";
+                return Align(
+                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isUser ? Colors.green : Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      messages[index]["message"] ?? "",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: messageController,
+                    decoration: InputDecoration(
+                      hintText: "Type a message...",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () => sendMessage(messageController.text),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble),
+            label: "Chatbot",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            //Current page, no action required
+          } else if (index == 1) {
+            Navigator.pushNamed(context, '/home');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/profile');
+          }
+        },
       ),
     );
   }

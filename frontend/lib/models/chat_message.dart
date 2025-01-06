@@ -1,7 +1,6 @@
 class ChatMessage {
-  final String? text;
-  final String? name;
-  final bool? type; // true for user message, false for bot message
+  final String message;
+  final bool isUser;
 
-  ChatMessage({this.text, this.name, this.type});
+  ChatMessage({required this.message, required this.isUser});
 }
