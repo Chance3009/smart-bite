@@ -7,7 +7,7 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: Colors.yellow[100],
       body: Column(
         children: [
-        // Top green title bar
+          // Top green title bar
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             color: Colors.green,
@@ -30,7 +30,8 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage('assets/profile_image.jpg'), // is replaced with the actual image path
+                        backgroundImage: AssetImage(
+                            'assets/profile_image.jpeg'), // is replaced with the actual image path
                         backgroundColor: Colors.white,
                       ),
                       SizedBox(height: 10),
@@ -56,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
-        //Body parameter box
+          //Body parameter box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -144,12 +145,12 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-  // Bottom navigation buttons
+      // Bottom navigation buttons
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
-        currentIndex: 2, 
+        currentIndex: 2,
         onTap: (index) {
           if (index == 0) {
             Navigator.pushNamed(context, '/chat');
@@ -177,7 +178,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoButton(BuildContext context, String title, String description) {
+  Widget _buildInfoButton(
+      BuildContext context, String title, String description) {
     return GestureDetector(
       onTap: () {
         // Display detailed information popup
