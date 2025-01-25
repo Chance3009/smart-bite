@@ -1,15 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           // Green background in the upper part
           Container(
-            height: 250,
-            color: Colors.green, 
+            height: 200,
+            color: Colors.green,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -44,16 +54,17 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ),
-        // Light yellow background in the lower part
+          // Light yellow background in the lower part
           Expanded(
             child: Container(
-              color: Colors.yellow[100], 
+              color: Colors.yellow[100],
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         labelText: "Email Address",
                         border: OutlineInputBorder(
@@ -65,6 +76,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     TextField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "Password",
@@ -88,8 +100,33 @@ class LoginScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home');
+                      onPressed: () async {
+                        try {
+                          UserCredential userCredential = await FirebaseAuth
+                              .instance
+                              .signInWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
+                          Navigator.pushNamed(context, '/home');
+                        } on FirebaseAuthException catch (e) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Login Error'),
+                              content: Text(
+                                  e.message ?? 'An unknown error occurred.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.yellow[700],

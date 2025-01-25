@@ -1,15 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset:true, 
       body: Column(
         children: [
           // Green background in the upper part
           Container(
-            height: 250,
-            color: Colors.green, 
+            height: 200,
+            color: Colors.green,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -47,13 +58,14 @@ class SignUpScreen extends StatelessWidget {
           // Light yellow background in the lower part
           Expanded(
             child: Container(
-              color: Colors.yellow[100], 
+              color: Colors.yellow[100],
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
+                      controller: nameController,
                       decoration: InputDecoration(
                         labelText: "Name",
                         border: OutlineInputBorder(
@@ -65,6 +77,7 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         labelText: "Email Address",
                         border: OutlineInputBorder(
@@ -76,6 +89,7 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     TextField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "Password",
@@ -88,9 +102,35 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
-                        // Click the Sign Up button to jump to the next page
-                        Navigator.pushNamed(context, '/home');
+                      onPressed: () async {
+                        try {
+                          // Firebase sign-up logic
+                          UserCredential userCredential = await FirebaseAuth
+                              .instance
+                              .createUserWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
+                          Navigator.pushNamed(context, '/onboarding');
+                        } on FirebaseAuthException catch (e) {
+                          // Handle errors
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Sign Up Error'),
+                              content: Text(
+                                  e.message ?? 'An unknown error occurred.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.yellow[700],
@@ -107,8 +147,7 @@ class SignUpScreen extends StatelessWidget {
                     SizedBox(height: 20),
                     TextButton(
                       onPressed: () {
-                        // Click the small text at the bottom to return to the login page
-                        Navigator.pop(context);
+                          Navigator.pushNamed(context, '/login');
                       },
                       child: Text(
                         "Already have an account? Log In",

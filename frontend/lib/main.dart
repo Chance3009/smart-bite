@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:smart_bite/screens/chat_screen_test.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/chat_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
-import 'screens/chat_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const SmartBiteApp());
 }
 
@@ -19,13 +22,15 @@ class SmartBiteApp extends StatelessWidget {
       title: 'SmartBite',
       theme: ThemeData(primarySwatch: Colors.green),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/chat',
+      initialRoute: '/home',
       routes: {
-        '/login': (context) =>  LoginScreen(),
+        '/login': (context) => LoginScreen(),
         '/signup': (context) => SignUpScreen(),
-        '/home': (context) =>  HomeScreen(),
-        '/profile': (context) =>  ProfileScreen(),
-        '/chat': (context) =>  ChatScreenTest(),
+        '/home': (context) => HomeScreen(),
+        '/profile': (context) => ProfileScreen(),
+        '/chat': (context) => ChatScreen(),
+        '/onboarding': (context) => OnboardingScreen(),
+
       },
     );
   }
